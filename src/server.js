@@ -177,28 +177,34 @@ app.use((err, req, res, next) => {
 // Start server
 const startServer = async () => {
   try {
-    // Test Supabase connection
-    console.log('🔄 Testing Supabase connection...');
-    const { error } = await supabase.from('projects').select('id').limit(1);
-    
-    if (error) {
-      console.error('❌ Cannot connect to Supabase:', error.message);
-      process.exit(1);
+    // Test Supabase connection only in non-Vercel environments
+    if (process.env.VERCEL !== '1') {
+      console.log('🔄 Testing Supabase connection...');
+      const { error } = await supabase.from('projects').select('id').limit(1);
+      
+      if (error) {
+        console.error('❌ Cannot connect to Supabase:', error.message);
+        process.exit(1);
+      }
+      
+      console.log('✅ Supabase REST API connected successfully');
     }
-    
-    console.log('✅ Supabase REST API connected successfully');
 
-    // Start listening
-    app.listen(PORT, () => {
-      console.log('='.repeat(60));
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
-      console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
-      console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`💾 Database: Supabase REST API`);
-      console.log(`🤖 Azure OpenAI Mock Mode: ${process.env.AZURE_OPENAI_MOCK_MODE === 'true' ? 'ENABLED' : 'DISABLED'}`);
-      console.log('='.repeat(60));
-    });
+    // Start listening only if not in Vercel (Vercel handles this)
+    if (process.env.VERCEL !== '1') {
+      app.listen(PORT, () => {
+        console.log('='.repeat(60));
+        console.log(`🚀 Server running on http://localhost:${PORT}`);
+        console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
+        console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
+        console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+        console.log(`💾 Database: Supabase REST API`);
+        console.log(`🤖 Azure OpenAI Mock Mode: ${process.env.AZURE_OPENAI_MOCK_MODE === 'true' ? 'ENABLED' : 'DISABLED'}`);
+        console.log('='.repeat(60));
+      });
+    } else {
+      console.log('🚀 Server ready for Vercel serverless deployment');
+    }
 
   } catch (error) {
     console.error('❌ Failed to start server:', error);
