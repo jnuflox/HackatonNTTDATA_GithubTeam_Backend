@@ -8,7 +8,13 @@
 
 API REST Node.js con análisis inteligente de proyectos mediante IA usando **Axet Conector LLM** de NTT DATA y base de datos PostgreSQL en Supabase.
 
-> 🏆 **Hackathon NTT DATA 2025** - Sistema de gestión de proyectos con análisis predictivo mediante IA, implementando técnicas avanzadas de prompting y arquitectura serverless.
+> 🏆 **Hackathon NTT DATA 2026** - Sistema de gestión de proyectos con análisis predictivo mediante IA, implementando técnicas avanzadas de prompting y arquitectura serverless.
+
+## 📖 Documentación Complementaria
+
+- 📘 [DATABASE.md](./DATABASE.md) - Documentación completa del esquema de base de datos
+- 🤖 [AXET_LLM_PROMPTS.md](./AXET_LLM_PROMPTS.md) - Prompts y configuración de Axet LLM
+- 🔨 [PROMPTS_PARA_GENERAR_APLICACION.md](./PROMPTS_PARA_GENERAR_APLICACION.md) - Guía paso a paso para generar la aplicación
 
 ## 🚀 Características Principales
 

@@ -2,6 +2,10 @@
 
 Este documento contiene todos los prompts organizados en secuencia para generar la aplicación completa desde cero utilizando GitHub Copilot o cualquier asistente de IA.
 
+**Actualizado:** 2026-01-29  
+**Proyecto:** Hackathon NTT DATA 2026 - sAPI IA Projects  
+**GitHub Team:** Backend API
+
 ---
 
 ## 🎯 Índice de Prompts
@@ -18,6 +22,21 @@ Este documento contiene todos los prompts organizados en secuencia para generar 
 10. [Scripts Utilitarios](#10-scripts-utilitarios)
 11. [Dockerización](#11-dockerización)
 12. [Deployment](#12-deployment)
+
+---
+
+## 🚀 Tecnologías Utilizadas
+
+- **Runtime:** Node.js 20.x
+- **Framework:** Express 4.18
+- **Base de Datos:** PostgreSQL (Supabase)
+- **ORM:** Sequelize 6.35
+- **IA:** Axet LLM Enabler (Azure OpenAI GPT-5.1)
+- **Documentación:** Swagger/OpenAPI 3.0
+- **Seguridad:** Helmet, CORS
+- **Validación:** Joi
+- **Testing:** Jest, Supertest
+- **Deployment:** Vercel (Serverless)
 
 ---
 
