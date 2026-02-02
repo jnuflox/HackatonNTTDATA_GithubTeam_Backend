@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IA Projects - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 30px;
+        }
+
+        .card h2 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .status-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .status-section h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .status-value {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .status-ok {
+            background: #4CAF50;
+        }
+
+        .status-error {
+            background: #f44336;
+        }
+
+        .status-loading {
+            background: #ff9800;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .api-links {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .api-link {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .api-link:hover {
+            background: #764ba2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 IA Projects Management</h1>
+            <p>Sistema de gestión de proyectos con análisis de Inteligencia Artificial</p>
+        </div>
+
+        <div class="cards-grid">
+            <a href="feature/projects/page-projects.html" class="card">
+                <div class="card-icon">📊</div>
+                <h2>Gestión de Proyectos</h2>
+                <p>Crea, edita y gestiona proyectos con análisis AI. Visualiza estadísticas y métricas en tiempo real.</p>
+            </a>
+
+            <a href="feature/dashboard/page-executive-dashboard.html" class="card">
+                <div class="card-icon">📈</div>
+                <h2>Dashboard Ejecutivo</h2>
+                <p>Dashboard con métricas clave, KPIs y análisis de rendimiento de todos los proyectos.</p>
+            </a>
+
+            <a href="feature/projects/page-project-ia.html" class="card">
+                <div class="card-icon">🤖</div>
+                <h2>Análisis con IA</h2>
+                <p>Análisis inteligente de proyectos usando Azure OpenAI para recomendaciones y predicciones.</p>
+            </a>
+        </div>
+
+        <div class="status-section">
+            <h3>🔌 Estado de Conexión API</h3>
+            <div class="status-item">
+                <span class="status-label">
+                    <span class="status-indicator status-loading" id="api-indicator"></span>
+                    Estado del Servidor
+                </span>
+                <span class="status-value" id="api-status">Verificando...</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📦 Proyectos en Base de Datos</span>
+                <span class="status-value" id="project-count">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">📋 Tareas Totales</span>
+                <span class="status-value" id="task-count">-</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">💾 Base de Datos</span>
+                <span class="status-value">Supabase REST API</span>
+            </div>
+
+            <div class="api-links">
+                <a href="http://localhost:3000/health" target="_blank" class="api-link">Health Check</a>
+                <a href="http://localhost:3000/api-docs" target="_blank" class="api-link">API Documentation (Swagger)</a>
+                <a href="http://localhost:3000/api/projects" target="_blank" class="api-link">Ver Proyectos API</a>
+                <a href="http://localhost:3000/api/projects/dashboard/stats" target="_blank" class="api-link">Dashboard Stats</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="api-client.js"></script>
+    <script>
+        // Check API status on page load
+        async function checkAPIStatus() {
+            const indicator = document.getElementById('api-indicator');
+            const statusText = document.getElementById('api-status');
+            const projectCount = document.getElementById('project-count');
+            const taskCount = document.getElementById('task-count');
+
+            try {
+                // Check health endpoint
+                const healthResponse = await fetch('http://localhost:3000/health');
+                
+                if (!healthResponse.ok) {
+                    throw new Error('API no disponible');
+                }
+
+                // Get dashboard stats
+                const statsResponse = await fetch('http://localhost:3000/api/projects/dashboard/stats');
+                const stats = await statsResponse.json();
+
+                if (stats.success) {
+                    // Update UI with success
+                    indicator.classList.remove('status-loading', 'status-error');
+                    indicator.classList.add('status-ok');
+                    statusText.textContent = 'Conectado ✓';
+                    statusText.style.color = '#4CAF50';
+                    
+                    projectCount.textContent = stats.data.overview.totalProjects || 0;
+                    taskCount.textContent = stats.data.overview.totalTasks || 0;
+                } else {
+                    throw new Error('Error en respuesta API');
+                }
+            } catch (error) {
+                console.error('Error checking API:', error);
+                indicator.classList.remove('status-loading', 'status-ok');
+                indicator.classList.add('status-error');
+                statusText.textContent = 'Error de conexión ✗';
+                statusText.style.color = '#f44336';
+                projectCount.textContent = 'N/A';
+                taskCount.textContent = 'N/A';
+            }
+        }
+
+        // Run on page load
+        checkAPIStatus();
+
+        // Refresh every 30 seconds
+        setInterval(checkAPIStatus, 30000);
+    </script>
+</body>
+</html>

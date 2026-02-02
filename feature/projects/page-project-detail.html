@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Proyecto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .detail-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-link:hover {
+            color: #5568d3;
+            text-decoration: underline;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        .breadcrumb-current {
+            color: #1e293b;
+            font-weight: 600;
+        }
+
+        /* BACK BUTTON */
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #f1f5f9;
+            color: #475569;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: #e2e8f0;
+            transform: translateX(-2px);
+        }
+
+        /* HEADER */
+        .detail-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .detail-title {
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .detail-subtitle {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        /* PROJECT INFO CARD */
+        .project-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .project-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .project-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .project-info-label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        .project-info-value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .project-info-link {
+            color: white;
+            text-decoration: underline;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .project-info-link:hover {
+            opacity: 0.8;
+        }
+
+        /* AI INDICATORS DASHBOARD */
+        .ai-dashboard {
+            margin-bottom: 30px;
+        }
+
+        .ai-dashboard-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ai-dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .ai-metric-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .ai-metric-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .ai-metric-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ai-metric-icon {
+            font-size: 32px;
+        }
+
+        .ai-metric-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-metric-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .ai-metric-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .ai-metric-breakdown {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .ai-metric-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .ai-metric-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .ai-metric-dot.green { background: #10b981; }
+        .ai-metric-dot.yellow { background: #f59e0b; }
+        .ai-metric-dot.red { background: #ef4444; }
+
+        /* FILTERS */
+        .task-filters {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .task-filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 15px;
+        }
+
+        .task-filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .task-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .task-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .task-input,
+        .task-select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .task-input:focus,
+        .task-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .task-filters-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .task-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .task-btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .task-btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .task-btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        /* TABLE */
+        .tasks-section {
+            margin-bottom: 30px;
+        }
+
+        .tasks-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .tasks-count {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .tasks-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .tasks-table thead {
+            background: #f1f5f9;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .tasks-table th {
+            padding: 12px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 2px solid #cbd5e1;
+            white-space: nowrap;
+        }
+
+        .tasks-table td {
+            padding: 12px 10px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .tasks-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .tasks-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* STATUS BADGES */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .status-badge.en-progreso { background: #dbeafe; color: #1e40af; }
+        .status-badge.completada { background: #d1fae5; color: #065f46; }
+        .status-badge.pendiente { background: #fef3c7; color: #92400e; }
+        .status-badge.bloqueada { background: #fee2e2; color: #991b1b; }
+
+        /* TRAFFIC LIGHT (SEMÁFORO) */
+        .traffic-light {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .traffic-light.green {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .traffic-light.yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .traffic-light.red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .traffic-light-icon {
+            font-size: 14px;
+        }
+
+        /* VALIDATION BADGES */
+        .validation-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-right: 4px;
+        }
+
+        .validation-badge.ok {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .validation-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .validation-badge.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* PROGRESS BAR */
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .progress-bar.warning {
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .progress-bar.danger {
+            background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        /* DEVIATION DISPLAY */
+        .deviation-value {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 600;
+        }
+
+        .deviation-value.positive {
+            color: #10b981;
+        }
+
+        .deviation-value.negative {
+            color: #ef4444;
+        }
+
+        .deviation-value.neutral {
+            color: #64748b;
+        }
+
+        /* TOOLTIP */
+        .tooltip-trigger {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip-content {
+            visibility: hidden;
+            position: absolute;
+            z-index: 100;
+            background: #1e293b;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 250px;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .tooltip-trigger:hover .tooltip-content {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip-content ul {
+            margin: 8px 0 0 16px;
+            padding: 0;
+        }
+
+        .tooltip-content li {
+            margin: 4px 0;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+        }
+
+        /* LOADING */
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* ALERTS */
+        .detail-alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .detail-alert-warning {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+        }
+
+        /* MILESTONE GROUPING */
+        .milestone-group {
+            margin-bottom: 30px;
+        }
+
+        .milestone-header {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .milestone-header:hover {
+            background: #e2e8f0;
+        }
+
+        .milestone-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .milestone-stats {
+            font-size: 13px;
+            color: #64748b;
+            display: flex;
+            gap: 16px;
+        }
+
+        .milestone-stat {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* FINANCIAL ANALYSIS SECTION */
+        .financial-analysis {
+            margin-bottom: 30px;
+        }
+
+        .financial-analysis-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .financial-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .financial-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .financial-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .financial-card.success {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+        }
+
+        .financial-card.warning {
+            border-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+
+        .financial-card.danger {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .financial-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .financial-card-icon {
+            font-size: 32px;
+        }
+
+        .financial-card-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .financial-card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .financial-card-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .financial-card-details {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .financial-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .financial-detail-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .financial-detail-label {
+            color: #64748b;
+        }
+
+        .financial-detail-value {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .financial-alert-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .financial-alert-badge.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .financial-alert-badge.warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .financial-alert-badge.danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .financial-gauge-container {
+            position: relative;
+            height: 120px;
+            margin: 16px 0;
+        }
+
+        .financial-gauge-bars {
+            display: flex;
+            gap: 10px;
+            height: 80px;
+            align-items: flex-end;
+        }
+
+        .financial-gauge-bar {
+            flex: 1;
+            background: #e2e8f0;
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            transition: all 0.3s;
+            min-height: 20%;
+        }
+
+        .financial-gauge-bar.progress-bar {
+            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+        }
+
+        .financial-gauge-bar.budget-bar {
+            background: linear-gradient(180deg, #667eea 0%, #5568d3 100%);
+        }
+
+        .financial-gauge-bar.critical-bar {
+            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .financial-gauge-label {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .financial-gauge-value {
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .financial-gauge-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+
+        .financial-gauge-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .financial-gauge-legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        /* AI VALIDATION SEMAPHORE (CIRCLE) */
+        .ai-validation-semaphore {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            border: 3px solid;
+        }
+
+        .ai-validation-semaphore:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .ai-validation-semaphore.status-green {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .ai-validation-semaphore.status-yellow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
+        .ai-validation-semaphore.status-red {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+
+        .ai-validation-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1;
+        }
+
+        .ai-validation-score-value {
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .ai-validation-score-total {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 2px;
+        }
+
+        /* RISK SEMAPHORE (CLICKABLE) */
+        .risk-semaphore-clickable {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .risk-semaphore-clickable:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .risk-semaphore-clickable.green {
+            background: #d1fae5;
+            color: #065f46;
+            border-color: #10b981;
+        }
+
+        .risk-semaphore-clickable.yellow {
+            background: #fef3c7;
+            color: #92400e;
+            border-color: #f59e0b;
+        }
+
+        .risk-semaphore-clickable.red {
+            background: #fee2e2;
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+
+        .risk-icon {
+            font-size: 16px;
+        }
+
+        /* AI VALIDATION MODAL */
+        .ai-modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .ai-modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ai-modal-container {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 1200px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid #5568d3;
+        }
+
+        .ai-modal-title-section {
+            flex: 1;
+        }
+
+        .ai-modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .ai-modal-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+
+        .ai-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .ai-modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        /* AI VALIDATION SUMMARY */
+        .ai-validation-summary {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .ai-summary-metric {
+            text-align: center;
+        }
+
+        .ai-summary-metric-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .ai-summary-metric-value.green { color: #10b981; }
+        .ai-summary-metric-value.yellow { color: #f59e0b; }
+        .ai-summary-metric-value.red { color: #ef4444; }
+
+        .ai-summary-metric-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* AI VALIDATION SECTIONS */
+        .ai-validation-section {
+            margin-bottom: 35px;
+        }
+
+        .ai-section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .ai-section-icon {
+            font-size: 28px;
+        }
+
+        .ai-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .ai-section-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-section-badge.gitlab {
+            background: #fcd34d;
+            color: #92400e;
+        }
+
+        .ai-section-badge.sonarqube {
+            background: #93c5fd;
+            color: #1e40af;
+        }
+
+        .ai-section-badge.jira {
+            background: #c7d2fe;
+            color: #4338ca;
+        }
+
+        /* AI VALIDATION CARDS GRID */
+        .ai-validation-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .ai-validation-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .ai-validation-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .ai-validation-card.complete {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+        }
+
+        .ai-validation-card.incomplete {
+            border-color: #ef4444;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+
+        .ai-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .ai-card-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            flex: 1;
+        }
+
+        .ai-card-status-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            margin-left: 8px;
+        }
+
+        .ai-card-status-badge.complete {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .ai-card-status-badge.incomplete {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .ai-card-summary {
+            font-size: 13px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .ai-card-summary strong {
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        /* EMPTY STATE MODAL */
+        .ai-modal-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .ai-modal-empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .ai-modal-empty-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #64748b;
+        }
+
+        .ai-modal-empty-text {
+            font-size: 14px;
+        }
+    </style>
+    <!-- jQuery CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Mock Data -->
+    <!-- <script src="../../../ms-ia-projects/feature/ms-api-projects/projects-mock.js"></script> -->
+    <!-- Main Script -->
+    <script src="page-project-detail.js"></script>
+</head>
+<body>
+    <div class="detail-container">
+        <!-- Breadcrumb -->
+        <nav class="breadcrumb">
+            <div class="breadcrumb-item">
+                <a href="page-projects.html" class="breadcrumb-link" id="breadcrumbLink">🏠 Proyectos</a>
+            </div>
+            <span class="breadcrumb-separator">›</span>
+            <div class="breadcrumb-item">
+                <span class="breadcrumb-current" id="breadcrumbCurrent">Detalle del Proyecto</span>
+            </div>
+        </nav>
+
+        <!-- Back Button -->
+        <button class="back-button" id="btnBack">
+            ← Volver a Proyectos
+        </button>
+
+        <!-- Header -->
+        <div class="detail-header">
+            <h1 class="detail-title" id="projectTitle">Detalle del Proyecto</h1>
+            <p class="detail-subtitle">Seguimiento de actividades por hitos de entrega con validación IA</p>
+        </div>
+
+        <!-- Alert Container -->
+        <div id="alertContainer"></div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Cargando información del proyecto...</div>
+        </div>
+
+        <!-- Project Info Card -->
+        <div class="project-info-card" id="projectInfoCard" style="display: none;">
+            <div class="project-info-grid" id="projectInfoGrid">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
+        <!-- AI Indicators Dashboard -->
+        <div class="ai-dashboard" id="aiDashboard" style="display: none;">
+            <h2 class="ai-dashboard-title">
+                🤖 Indicadores de Validación IA
+            </h2>
+            <div class="ai-dashboard-grid" id="aiDashboardGrid">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Financial Analysis Dashboard -->
+        <div class="financial-analysis" id="financialAnalysis" style="display: none;">
+            <h2 class="financial-analysis-title">
+                💰 Análisis Financiero y Facturación
+            </h2>
+            <div class="financial-cards-grid" id="financialCardsGrid">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="task-filters" id="taskFilters" style="display: none;">
+            <h3 class="task-filters-title">🔍 Filtrar Tareas</h3>
+            <div class="task-filters-grid">
+                <div class="task-form-group">
+                    <label class="task-label">Código de Tarea</label>
+                    <input type="text" class="task-input" id="filterTaskCode" placeholder="PRJ-123">
+                </div>
+                <div class="task-form-group">
+                    <label class="task-label">Etapa</label>
+                    <select class="task-select" id="filterStage">
+                        <option value="">Todas las etapas</option>
+                    </select>
+                </div>
+                <div class="task-form-group">
+                    <label class="task-label">Hito / Entregable</label>
+                    <select class="task-select" id="filterMilestone">
+                        <option value="">Todos los hitos</option>
+                    </select>
+                </div>
+                <div class="task-form-group">
+                    <label class="task-label">Estado</label>
+                    <select class="task-select" id="filterStatus">
+                        <option value="">Todos los estados</option>
+                        <option value="Pendiente">Pendiente</option>
+                        <option value="En Progreso">En Progreso</option>
+                        <option value="Completada">Completada</option>
+                        <option value="Bloqueada">Bloqueada</option>
+                    </select>
+                </div>
+                <div class="task-form-group">
+                    <label class="task-label">Responsable</label>
+                    <select class="task-select" id="filterResponsible">
+                        <option value="">Todos los responsables</option>
+                    </select>
+                </div>
+                <div class="task-form-group">
+                    <label class="task-label">Nivel de Riesgo IA</label>
+                    <select class="task-select" id="filterRiskLevel">
+                        <option value="">Todos los niveles</option>
+                        <option value="green">🟢 Bajo</option>
+                        <option value="yellow">🟡 Medio</option>
+                        <option value="red">🔴 Alto</option>
+                    </select>
+                </div>
+            </div>
+            <div class="task-filters-actions">
+                <button class="task-btn task-btn-secondary" id="btnClearFilters">
+                    🔄 Limpiar Filtros
+                </button>
+                <button class="task-btn task-btn-primary" id="btnApplyFilters">
+                    🔍 Aplicar Filtros
+                </button>
+            </div>
+        </div>
+
+        <!-- Tasks Section -->
+        <div class="tasks-section" id="tasksSection" style="display: none;">
+            <div class="tasks-header">
+                <h2 class="tasks-count" id="tasksCount">0 tareas encontradas</h2>
+            </div>
+
+            <!-- Tasks Table -->
+            <div class="table-container">
+                <table class="tasks-table">
+                    <thead>
+                        <tr>
+                            <th>Código Tarea</th>
+                            <th>Tarea</th>
+                            <th>Etapa</th>
+                            <th>Hito / Entregable</th>
+                            <th>Inicio</th>
+                            <th>Fin</th>
+                            <th>Estado</th>
+                            <th>% Avance</th>
+                            <th>% Planificado</th>
+                            <th>% Desviación</th>
+                            <th>Responsable</th>
+                            <th>Validación IA</th>
+                            <th>Riesgo</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasksTableBody">
+                        <!-- Dynamic content will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-title">No se encontraron tareas</div>
+                <div class="empty-state-text">No hay tareas que coincidan con los filtros aplicados</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Validation Modal -->
+    <div class="ai-modal-overlay" id="aiValidationModal">
+        <div class="ai-modal-container">
+            <div class="ai-modal-header">
+                <div class="ai-modal-title-section">
+                    <div class="ai-modal-title" id="aiModalTitle">Validación IA - Detalle</div>
+                    <div class="ai-modal-subtitle" id="aiModalSubtitle">
+                        🤖 Análisis automático de GitLab, SonarQube y Jira
+                    </div>
+                </div>
+                <button class="ai-modal-close" id="aiModalClose">×</button>
+            </div>
+            <div class="ai-modal-body" id="aiModalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

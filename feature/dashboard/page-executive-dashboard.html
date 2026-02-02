@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Ejecutivo - Predictor Inteligente IA</title>
+    
+    <!-- ApexCharts Library -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        /* HEADER */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        .dashboard-title-section {
+            flex: 1;
+        }
+
+        .dashboard-title {
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .dashboard-subtitle {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .dashboard-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .refresh-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .refresh-btn:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: #64748b;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        .last-update {
+            font-size: 12px;
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* FILTERS SECTION */
+        .filters-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        .filter-select, .filter-input {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #1e293b;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .filter-select:focus, .filter-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .filter-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            align-self: flex-end;
+        }
+
+        .filter-btn:hover {
+            background: #5568d3;
+        }
+
+        /* KPI CARDS */
+        .kpi-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .kpi-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .kpi-card.success { border-left: 4px solid #10b981; }
+        .kpi-card.warning { border-left: 4px solid #f59e0b; }
+        .kpi-card.danger { border-left: 4px solid #ef4444; }
+        .kpi-card.info { border-left: 4px solid #3b82f6; }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .kpi-icon {
+            font-size: 32px;
+        }
+
+        .kpi-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .kpi-subtitle {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .kpi-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+
+        .kpi-trend.up {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .kpi-trend.down {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* CHARTS SECTION */
+        .charts-section {
+            margin-bottom: 30px;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .chart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .chart-badge.predictor {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* RISK MATRIX */
+        .risk-matrix-container {
+            position: relative;
+            height: 450px;
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 40px;
+        }
+
+        /* CRITICAL PROJECTS TABLE */
+        .critical-projects-section {
+            margin-bottom: 30px;
+        }
+
+        .projects-table-container {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .projects-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .projects-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .projects-table th {
+            padding: 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .projects-table td {
+            padding: 16px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .projects-table tbody tr {
+            transition: all 0.2s;
+        }
+
+        .projects-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .project-code {
+            font-weight: 600;
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .project-code:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .risk-badge.red {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .risk-badge.yellow {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .risk-badge.green {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .deviation-value {
+            font-weight: 700;
+        }
+
+        .deviation-value.positive { color: #10b981; }
+        .deviation-value.negative { color: #ef4444; }
+
+        /* WHY WE FAIL SECTION */
+        .failure-analysis-section {
+            margin-bottom: 30px;
+        }
+
+        .failure-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .failure-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-left: 4px solid #ef4444;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .failure-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .failure-icon {
+            font-size: 28px;
+        }
+
+        .failure-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .failure-count {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 8px;
+        }
+
+        .failure-description {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .failure-list {
+            list-style: none;
+            margin-top: 12px;
+        }
+
+        .failure-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            color: #475569;
+        }
+
+        .failure-list li:last-child {
+            border-bottom: none;
+        }
+
+        .failure-list li::before {
+            content: '• ';
+            color: #ef4444;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        /* RECOMMENDATIONS */
+        .recommendations-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            margin-top: 30px;
+        }
+
+        .recommendations-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .recommendation-item-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .recommendation-item-text {
+            font-size: 13px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* LOADING STATE */
+        .loading-state {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading-state.active {
+            display: block;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* EMPTY STATE */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-text {
+            font-size: 14px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 16px;
+            }
+
+            .kpi-grid, .charts-grid, .failure-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-title-section">
+                <h1 class="dashboard-title">
+                    <span>🎯</span>
+                    Dashboard Ejecutivo - Predictor Inteligente IA
+                </h1>
+                <p class="dashboard-subtitle">Análisis de Riesgos y Rentabilidad en Portafolio de Proyectos</p>
+                <p class="last-update" id="lastUpdate">Última actualización: --</p>
+            </div>
+            <div class="dashboard-actions">
+                <a href="../projects/page-projects.html" class="back-btn">
+                    ← Volver a Proyectos
+                </a>
+                <button class="refresh-btn" id="refreshBtn">
+                    🔄 Actualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="filters-section">
+            <h3 class="filters-title">🔍 Filtros de Análisis</h3>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Período de Análisis</label>
+                    <select class="filter-select" id="filterPeriod">
+                        <option value="all">Todos los proyectos</option>
+                        <option value="current">En curso (Activos)</option>
+                        <option value="last30">Últimos 30 días</option>
+                        <option value="q1-2026">Q1 2026</option>
+                        <option value="2026">Año 2026</option>
+                        <option value="2025">Año 2025</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado del Proyecto</label>
+                    <select class="filter-select" id="filterStatus">
+                        <option value="">Todos</option>
+                        <option value="Activo">Activo</option>
+                        <option value="En Pausa">En Pausa</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Nivel de Riesgo</label>
+                    <select class="filter-select" id="filterRisk">
+                        <option value="">Todos</option>
+                        <option value="green">✓ Bajo (Verde)</option>
+                        <option value="yellow">⚠ Medio (Amarillo)</option>
+                        <option value="red">✕ Alto (Rojo)</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn" id="applyFiltersBtn">Aplicar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Cargando dashboard ejecutivo...</div>
+        </div>
+
+        <!-- Main Content -->
+        <div id="mainContent" style="display: none;">
+            <!-- KPI Section -->
+            <div class="kpi-section">
+                <h2 class="section-title">📊 Indicadores Clave de Gestión (KPIs)</h2>
+                <div class="kpi-grid" id="kpiGrid">
+                    <!-- Dynamic KPI cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Predictor Inteligente Section -->
+            <div class="charts-section">
+                <h2 class="section-title">🤖 Predictor Inteligente de Riesgos y Rentabilidad</h2>
+                <div class="charts-grid">
+                    <!-- Risk Matrix Chart -->
+                    <div class="chart-card" style="grid-column: span 2;">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                📈 Matriz de Riesgo del Portafolio
+                                <span class="chart-badge predictor">IA PREDICTOR</span>
+                            </h3>
+                        </div>
+                        <div id="riskMatrixChart"></div>
+                    </div>
+
+                    <!-- Risk Distribution Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">🚦 Distribución de Riesgos</h3>
+                        </div>
+                        <div id="riskDistributionChart"></div>
+                    </div>
+
+                    <!-- Progress Trends Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">📊 Progreso vs Planificado</h3>
+                        </div>
+                        <div id="progressTrendsChart"></div>
+                    </div>
+
+                    <!-- Financial Analysis Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">💰 Distribución Presupuestal</h3>
+                        </div>
+                        <div id="budgetDistributionChart"></div>
+                    </div>
+
+                    <!-- Timeline Chart -->
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">📅 Línea de Tiempo de Proyectos</h3>
+                        </div>
+                        <div id="timelineChart"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Critical Projects Table -->
+            <div class="critical-projects-section">
+                <h2 class="section-title">⚠️ Proyectos en Situación Crítica</h2>
+                <div class="projects-table-container">
+                    <table class="projects-table">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Proyecto</th>
+                                <th>Líder</th>
+                                <th>Riesgo</th>
+                                <th>Desviación</th>
+                                <th>Estado Financiero</th>
+                                <th>Razones de Riesgo</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="criticalProjectsBody">
+                            <!-- Dynamic rows will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" id="noCriticalProjects" style="display: none;">
+                    <div class="empty-state-icon">🎉</div>
+                    <div class="empty-state-title">¡Excelente!</div>
+                    <div class="empty-state-text">No hay proyectos en situación crítica en este momento.</div>
+                </div>
+            </div>
+
+            <!-- Why We Fail Section -->
+            <div class="failure-analysis-section">
+                <h2 class="section-title">❌ ¿Dónde tenemos riesgo y por qué fallamos?</h2>
+                <div class="failure-grid" id="failureGrid">
+                    <!-- Dynamic failure analysis cards will be inserted here -->
+                </div>
+            </div>
+
+            <!-- Recommendations Section -->
+            <div class="recommendations-section">
+                <h3 class="recommendations-title">💡 Recomendaciones de Mejora del Predictor IA</h3>
+                <div class="recommendations-grid" id="recommendationsGrid">
+                    <!-- Dynamic recommendations will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Script -->
+    <script src="page-executive-dashboard.js"></script>
+</body>
+</html>

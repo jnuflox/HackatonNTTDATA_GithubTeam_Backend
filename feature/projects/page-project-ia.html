@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis IA del Proyecto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .ia-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb-link:hover {
+            color: #764ba2;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+
+        /* BACK BUTTON */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #5568d3;
+            transform: translateX(-3px);
+        }
+
+        /* HEADER */
+        .ia-header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .ia-title {
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ia-subtitle {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        /* PROJECT INFO CARD */
+        .project-info-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 25px;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .project-info-header {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .project-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .project-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-info-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-bottom: 4px;
+        }
+
+        .project-info-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        /* TABS */
+        .ia-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .ia-tab-btn {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .ia-tab-btn:hover {
+            color: #667eea;
+        }
+
+        .ia-tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* TAB PANELS */
+        .ia-tab-panel {
+            display: none;
+        }
+
+        .ia-tab-panel.active {
+            display: block;
+        }
+
+        /* TIMELINE STYLES */
+        .timeline-wrapper {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline-wrapper::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .timeline-entry {
+            position: relative;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .timeline-entry::before {
+            content: '●';
+            position: absolute;
+            left: -31px;
+            top: 22px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid #667eea;
+            border-radius: 50%;
+            font-size: 0;
+        }
+
+        .entry-timestamp {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .entry-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .entry-description {
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .entry-note {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #334155;
+        }
+
+        .empty-timeline {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        /* AI ANALYSIS STYLES */
+        .ai-analysis-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .ai-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .ai-section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .ai-section-icon {
+            font-size: 24px;
+        }
+
+        .ai-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .ai-status {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+
+        .ai-badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .ai-badge-warning {
+            background: #fef3c7;
+            color: #854d0e;
+        }
+
+        .ai-badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .ai-risks-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-risk-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+
+        .ai-risk-item.low {
+            border-left-color: #22c55e;
+        }
+
+        .ai-risk-item.medium {
+            border-left-color: #f59e0b;
+        }
+
+        .ai-risk-item.high {
+            border-left-color: #ef4444;
+        }
+
+        .ai-risk-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .ai-risk-content {
+            flex: 1;
+        }
+
+        .ai-risk-category {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .ai-risk-description {
+            font-size: 14px;
+            color: #334155;
+            font-weight: 500;
+        }
+
+        .ai-actions-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .ai-action-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .ai-action-content {
+            flex: 1;
+        }
+
+        .ai-action-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .ai-action-description {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .ai-suggestions-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .ai-suggestion-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .ai-suggestion-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .ai-suggestion-description {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        /* LOADING */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        /* ERROR STATE */
+        .error-container {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ef4444;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .error-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .error-btn:hover {
+            background: #5568d3;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .ia-container {
+                padding: 20px;
+            }
+
+            .ia-title {
+                font-size: 24px;
+            }
+
+            .project-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .ia-tabs {
+                flex-wrap: wrap;
+            }
+
+            .ia-tab-btn {
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ia-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb">
+            <div class="breadcrumb-item">
+                <a href="page-projects.html" class="breadcrumb-link">Proyectos</a>
+            </div>
+            <span class="breadcrumb-separator">›</span>
+            <div class="breadcrumb-item">
+                <span id="breadcrumbProjectCode">Cargando...</span>
+            </div>
+            <span class="breadcrumb-separator">›</span>
+            <div class="breadcrumb-item">
+                <span>Análisis IA</span>
+            </div>
+        </div>
+
+        <!-- Back Button -->
+        <button class="back-btn" onclick="goBack()">
+            ← Volver al Listado
+        </button>
+
+        <!-- Header -->
+        <div class="ia-header">
+            <h1 class="ia-title">
+                🤖 Análisis IA del Proyecto
+            </h1>
+            <p class="ia-subtitle">Historial de cambios y análisis inteligente generado por IA</p>
+        </div>
+
+        <!-- Loading State -->
+        <div class="loading-container" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Cargando análisis del proyecto...</p>
+        </div>
+
+        <!-- Error State -->
+        <div class="error-container" id="errorState" style="display: none;">
+            <div class="error-icon">❌</div>
+            <h2 class="error-title">Proyecto no encontrado</h2>
+            <p class="error-message">No se pudo cargar la información del proyecto.</p>
+            <button class="error-btn" onclick="goBack()">Volver al Listado</button>
+        </div>
+
+        <!-- Content (hidden initially) -->
+        <div id="contentArea" style="display: none;">
+            <!-- Project Info Card -->
+            <div class="project-info-card">
+                <div class="project-info-header" id="projectName">Proyecto</div>
+                <div class="project-info-grid">
+                    <div class="project-info-item">
+                        <span class="project-info-label">Código</span>
+                        <span class="project-info-value" id="projectCode">-</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span class="project-info-label">Líder</span>
+                        <span class="project-info-value" id="projectLeader">-</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span class="project-info-label">Estado</span>
+                        <span class="project-info-value" id="projectStatus">-</span>
+                    </div>
+                    <div class="project-info-item">
+                        <span class="project-info-label">Avance</span>
+                        <span class="project-info-value" id="projectProgress">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="ia-tabs">
+                <button class="ia-tab-btn active" data-tab="timeline">
+                    📜 Historial de Cambios
+                </button>
+                <button class="ia-tab-btn" data-tab="analysis">
+                    🤖 Análisis de IA
+                </button>
+            </div>
+
+            <!-- Tab Panel: Historial -->
+            <div class="ia-tab-panel active" id="panelTimeline">
+                <div id="timelineContainer">
+                    <!-- Se renderizará dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Tab Panel: Análisis IA -->
+            <div class="ia-tab-panel" id="panelAnalysis">
+                <div id="aiAnalysisContainer">
+                    <!-- Se renderizará dinámicamente -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Mock API Data -->
+    <!-- <script src="../../../ms-ia-projects/feature/ms-api-projects/projects-mock.js"></script> -->
+    <!-- Application Logic -->
+    <script src="page-project-ia.js"></script>
+</body>
+</html>

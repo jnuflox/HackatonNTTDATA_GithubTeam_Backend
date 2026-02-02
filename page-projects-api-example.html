@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Proyectos - IA Projects</title>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- API Client -->
+    <script src="../../api-client.js"></script>
+    
+    <style>
+        /* Existing styles remain the same */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        .header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .title {
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .project-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .project-code {
+            font-size: 14px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+        }
+
+        .project-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .project-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-paused {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .filters {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .filter-input,
+        .filter-select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .filter-input:focus,
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🚀 Gestión de Proyectos con IA</h1>
+            <p>Sistema integrado con Azure OpenAI, PostgreSQL y Docker</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <h3>Filtros</h3>
+            <div class="filter-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Código</label>
+                    <input type="text" id="filterCode" class="filter-input" placeholder="Ej: PRJ-001">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select id="filterStatus" class="filter-select">
+                        <option value="">Todos</option>
+                        <option value="Activo">Activo</option>
+                        <option value="En Pausa">En Pausa</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="btn btn-primary" id="btnApplyFilters">🔍 Aplicar Filtros</button>
+                <button class="btn" id="btnClearFilters">🔄 Limpiar</button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading" style="display: none;">
+            ⏳ Cargando proyectos...
+        </div>
+
+        <!-- Projects List -->
+        <div id="projectsList"></div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Application State
+            const appState = {
+                projects: [],
+                filteredProjects: []
+            };
+
+            // Initialize
+            init();
+
+            function init() {
+                setupEventListeners();
+                loadProjects();
+            }
+
+            function setupEventListeners() {
+                $('#btnApplyFilters').on('click', applyFilters);
+                $('#btnClearFilters').on('click', clearFilters);
+            }
+
+            // ============================================
+            // DATA LOADING
+            // ============================================
+
+            async function loadProjects() {
+                showLoading(true);
+                hideAlert();
+
+                try {
+                    // Call API using ProjectAPI service
+                    const response = await ProjectAPI.getAllProjects();
+                    
+                    if (response.success) {
+                        appState.projects = response.data;
+                        appState.filteredProjects = response.data;
+                        renderProjects();
+                        showAlert('success', `✅ ${response.count} proyectos cargados exitosamente desde la base de datos`);
+                    } else {
+                        throw new Error(response.error || 'Error desconocido');
+                    }
+
+                } catch (error) {
+                    console.error('Error loading projects:', error);
+                    showAlert('error', `❌ Error al cargar proyectos: ${error.message}`);
+                    appState.projects = [];
+                    appState.filteredProjects = [];
+                    renderProjects();
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            // ============================================
+            // FILTERING
+            // ============================================
+
+            async function applyFilters() {
+                showLoading(true);
+                hideAlert();
+
+                try {
+                    const filters = {
+                        code: $('#filterCode').val().trim(),
+                        status: $('#filterStatus').val()
+                    };
+
+                    // Call API with filters
+                    const response = await ProjectAPI.getAllProjects(filters);
+                    
+                    if (response.success) {
+                        appState.filteredProjects = response.data;
+                        renderProjects();
+                        showAlert('success', `🔍 ${response.count} proyectos encontrados`);
+                    }
+
+                } catch (error) {
+                    console.error('Error filtering projects:', error);
+                    showAlert('error', `❌ Error al filtrar: ${error.message}`);
+                } finally {
+                    showLoading(false);
+                }
+            }
+
+            function clearFilters() {
+                $('#filterCode').val('');
+                $('#filterStatus').val('');
+                appState.filteredProjects = appState.projects;
+                renderProjects();
+                hideAlert();
+            }
+
+            // ============================================
+            // RENDERING
+            // ============================================
+
+            function renderProjects() {
+                const container = $('#projectsList');
+                container.empty();
+
+                if (appState.filteredProjects.length === 0) {
+                    container.html(`
+                        <div class="loading">
+                            📋 No se encontraron proyectos
+                        </div>
+                    `);
+                    return;
+                }
+
+                appState.filteredProjects.forEach(project => {
+                    const deviation = (project.actual_progress - project.planned_progress).toFixed(1);
+                    const deviationSign = deviation > 0 ? '+' : '';
+                    const statusClass = getStatusClass(project.status);
+
+                    const card = $(`
+                        <div class="project-card">
+                            <div class="project-code">${escapeHtml(project.code)}</div>
+                            <div class="project-name">${escapeHtml(project.name)}</div>
+                            <div class="project-info">
+                                <div class="info-item">
+                                    <div class="info-label">Estado</div>
+                                    <div class="info-value">
+                                        <span class="status-badge ${statusClass}">${escapeHtml(project.status)}</span>
+                                    </div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Líder</div>
+                                    <div class="info-value">${escapeHtml(project.leader)}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Avance</div>
+                                    <div class="info-value">${project.actual_progress}% (Plan: ${project.planned_progress}%)</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Desviación</div>
+                                    <div class="info-value">${deviationSign}${deviation}%</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Presupuesto</div>
+                                    <div class="info-value">$${formatNumber(project.budget_consumed)} / $${formatNumber(project.budget_total)}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Riesgo IA</div>
+                                    <div class="info-value">${getRiskIcon(project.ai_risk_level)} ${project.ai_risk_level || 'N/A'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `);
+
+                    container.append(card);
+                });
+            }
+
+            // ============================================
+            // UTILITIES
+            // ============================================
+
+            function showLoading(show) {
+                if (show) {
+                    $('#loadingState').show();
+                    $('#projectsList').hide();
+                } else {
+                    $('#loadingState').hide();
+                    $('#projectsList').show();
+                }
+            }
+
+            function showAlert(type, message) {
+                const alertClass = type === 'error' ? 'error' : 'success';
+                const alert = $(`
+                    <div class="${alertClass}">
+                        ${message}
+                    </div>
+                `);
+                
+                $('#alertContainer').html(alert);
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    alert.fadeOut(300, function() {
+                        $(this).remove();
+                    });
+                }, 5000);
+            }
+
+            function hideAlert() {
+                $('#alertContainer').empty();
+            }
+
+            function getStatusClass(status) {
+                const statusMap = {
+                    'Activo': 'status-active',
+                    'En Pausa': 'status-paused',
+                    'Completado': 'status-completed',
+                    'Cancelado': 'status-paused'
+                };
+                return statusMap[status] || 'status-active';
+            }
+
+            function getRiskIcon(riskLevel) {
+                const riskMap = {
+                    'green': '🟢',
+                    'yellow': '🟡',
+                    'red': '🔴'
+                };
+                return riskMap[riskLevel] || '⚪';
+            }
+
+            function escapeHtml(text) {
+                if (!text) return '';
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function formatNumber(num) {
+                if (!num) return '0';
+                return parseFloat(num).toLocaleString('es-ES', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+            }
+        });
+    </script>
+</body>
+</html>

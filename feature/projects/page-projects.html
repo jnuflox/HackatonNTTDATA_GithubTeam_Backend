@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mantenimiento de Proyectos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .project-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+
+        .project-header {
+            margin-bottom: 30px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+        }
+
+        .project-title {
+            font-size: 32px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .project-subtitle {
+            font-size: 16px;
+            color: #64748b;
+        }
+
+        .project-filters-section {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .project-filters-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 15px;
+        }
+
+        .project-filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .project-form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .project-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+
+        .project-input,
+        .project-select {
+            padding: 10px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .project-input:focus,
+        .project-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .project-filters-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .project-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .project-btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .project-btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .project-btn-secondary {
+            background: #e2e8f0;
+            color: #475569;
+        }
+
+        .project-btn-secondary:hover {
+            background: #cbd5e1;
+        }
+
+        .project-btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .project-btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .project-btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .project-btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .project-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .project-actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .project-results-count {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .project-table-container {
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .project-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .project-table thead {
+            background: #f1f5f9;
+        }
+
+        .project-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 2px solid #cbd5e1;
+            white-space: nowrap;
+        }
+
+        .project-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #475569;
+        }
+
+        .project-table tbody tr:hover {
+            background: #f8fafc;
+        }
+
+        .project-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .project-status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .project-status-activo {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .project-status-en-pausa {
+            background: #fef3c7;
+            color: #854d0e;
+        }
+
+        .project-status-completado {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .project-status-cancelado {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .project-deviation {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .project-deviation-icon {
+            font-size: 18px;
+        }
+
+        .project-deviation-value {
+            font-weight: 600;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .project-btn-icon {
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .project-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+
+        .project-empty-icon {
+            font-size: 64px;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+
+        .project-empty-text {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Modal Styles */
+        .project-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .project-modal.active {
+            display: flex;
+        }
+
+        .project-modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .project-modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .project-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        .project-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .project-modal-close:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+
+        .project-modal-body {
+            padding: 25px;
+        }
+
+        .project-modal-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .project-form-group-full {
+            grid-column: 1 / -1;
+        }
+
+        .project-modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .project-alert {
+            padding: 12px 16px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .project-alert-success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .project-alert-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+
+        .project-alert-info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #bfdbfe;
+        }
+
+        .project-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: project-spin 0.8s linear infinite;
+        }
+
+        @keyframes project-spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .project-loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .project-loading.active {
+            display: block;
+        }
+
+        .project-loading-spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 15px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: project-spin 1s linear infinite;
+        }
+
+        /* Sistema de navegación por pestañas */
+        .modal-nav-bar {
+            display: flex;
+            gap: 8px;
+            border-bottom: 3px solid #f1f5f9;
+            margin-bottom: 25px;
+        }
+
+        .nav-tab-btn {
+            flex: 1;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            border-bottom: 4px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+            margin-bottom: -3px;
+        }
+
+        .nav-tab-btn:hover {
+            color: #475569;
+        }
+
+        .nav-tab-btn.selected {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-panel {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .tab-panel.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Estilos para línea de tiempo del historial */
+        .timeline-wrapper {
+            padding: 20px 0 20px 40px;
+            position: relative;
+        }
+
+        .timeline-entry {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 30px;
+        }
+
+        .timeline-entry::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 8px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border: 4px solid #667eea;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .timeline-entry::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 22px;
+            width: 2px;
+            height: calc(100% + 8px);
+            background: #e2e8f0;
+            z-index: 1;
+        }
+
+        .timeline-entry:last-child::after {
+            display: none;
+        }
+
+        .entry-timestamp {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .entry-title {
+            font-size: 15px;
+            color: #1e293b;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .entry-description {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+
+        .entry-note {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #78350f;
+            margin-top: 10px;
+        }
+
+        .empty-timeline {
+            text-align: center;
+            padding: 50px 30px;
+            color: #cbd5e1;
+        }
+
+        /* Estilos para el análisis de IA */
+        .ai-block {
+            margin-bottom: 30px;
+        }
+
+        .ai-block-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .ai-icon-badge {
+            font-size: 22px;
+        }
+
+        .ai-block-label {
+            font-size: 17px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .ai-block-body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .ai-paragraph {
+            font-size: 14px;
+            color: #334155;
+            line-height: 1.8;
+            margin: 0;
+        }
+
+        .ai-item-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ai-item-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            font-size: 14px;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .ai-item-list li::before {
+            content: '→';
+            position: absolute;
+            left: 8px;
+            color: #667eea;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .risk-badge-high {
+            background: #fecaca;
+            color: #991b1b;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .risk-badge-medium {
+            background: #fed7aa;
+            color: #9a3412;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .risk-badge-low {
+            background: #bbf7d0;
+            color: #166534;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+            .project-container {
+                padding: 20px;
+            }
+
+            .project-title {
+                font-size: 24px;
+            }
+
+            .project-filters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-modal-form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .project-table {
+                font-size: 12px;
+            }
+
+            .project-table th,
+            .project-table td {
+                padding: 8px 10px;
+            }
+
+            .modal-nav-bar {
+                overflow-x: auto;
+            }
+
+            .nav-tab-btn {
+                font-size: 11px;
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="project-container">
+        <!-- Header -->
+        <div class="project-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1 class="project-title">Proyectos</h1>
+                    <p class="project-subtitle">Gestión y seguimiento de proyectos</p>
+                </div>
+                <div>
+                    <a href="../dashboard/page-executive-dashboard.html" class="project-btn project-btn-success" style="text-decoration: none;">
+                        🎯 Dashboard Ejecutivo
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters Section -->
+        <div class="project-filters-section">
+            <h2 class="project-filters-title">Filtros de Búsqueda</h2>
+            <div class="project-filters-grid">
+                <div class="project-form-group">
+                    <label class="project-label" for="filterCode">Código de Proyecto</label>
+                    <input type="text" id="filterCode" class="project-input" placeholder="Ej: PRJ-001">
+                </div>
+                <div class="project-form-group">
+                    <label class="project-label" for="filterStatus">Estado</label>
+                    <select id="filterStatus" class="project-select">
+                        <option value="">Todos los estados</option>
+                        <option value="Activo">Activo</option>
+                        <option value="En Pausa">En Pausa</option>
+                        <option value="Completado">Completado</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <div class="project-form-group">
+                    <label class="project-label" for="filterStartDate">Fecha Inicio Desde</label>
+                    <input type="date" id="filterStartDate" class="project-input">
+                </div>
+                <div class="project-form-group">
+                    <label class="project-label" for="filterEndDate">Fecha Fin Hasta</label>
+                    <input type="date" id="filterEndDate" class="project-input">
+                </div>
+                <div class="project-form-group">
+                    <label class="project-label" for="filterDeviation">Nivel de Desviación</label>
+                    <select id="filterDeviation" class="project-select">
+                        <option value="">Todos los niveles</option>
+                        <option value="on-track">✓ En Objetivo (≤5%)</option>
+                        <option value="at-risk">⚠ En Riesgo (5-10%)</option>
+                        <option value="critical">✕ Crítico (>10%)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="project-filters-actions">
+                <button class="project-btn project-btn-secondary" id="btnClearFilters">
+                    Limpiar Filtros
+                </button>
+                <button class="project-btn project-btn-primary" id="btnSearch">
+                    🔍 Buscar
+                </button>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="project-actions-bar">
+            <div class="project-results-count" id="resultsCount">
+                0 proyectos encontrados
+            </div>
+            <button class="project-btn project-btn-success" id="btnNewProject">
+                ➕ Nuevo Proyecto
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div class="project-loading" id="loadingState">
+            <div class="project-loading-spinner"></div>
+            <p>Cargando proyectos...</p>
+        </div>
+
+        <!-- Projects Table -->
+        <div class="project-table-container" id="tableContainer">
+            <table class="project-table">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre del Proyecto</th>
+                        <th>Estado</th>
+                        <th>Líder</th>
+                        <th>Fecha Inicio</th>
+                        <th>Fecha Fin</th>
+                        <th>% Planificado</th>
+                        <th>% Avance</th>
+                        <th>% Desviación</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="projectsTableBody">
+                    <!-- Projects will be rendered here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="project-empty-state" id="emptyState" style="display: none;">
+            <div class="project-empty-icon">📋</div>
+            <p class="project-empty-text">No se encontraron proyectos</p>
+        </div>
+    </div>
+
+    <!-- Modal for Create/Edit Project -->
+    <div class="project-modal" id="projectModal">
+        <div class="project-modal-content">
+            <div class="project-modal-header">
+                <h2 class="project-modal-title" id="modalTitle">Nuevo Proyecto</h2>
+                <button class="project-modal-close" id="btnCloseModal">&times;</button>
+            </div>
+            <div class="project-modal-body">
+                <div id="modalAlert"></div>
+                
+                <!-- Sistema de navegación - Solo Configuración -->
+                <div class="modal-nav-bar">
+                    <button type="button" class="nav-tab-btn selected" data-panel="form">
+                        📝 Información
+                    </button>
+                    <button type="button" class="nav-tab-btn" data-panel="documents">
+                        📎 Documentos
+                    </button>
+                </div>
+
+                <!-- Panel: Formulario de datos -->
+                <div class="tab-panel visible" id="panelForm">
+                    <form id="projectForm">
+                        <input type="hidden" id="projectId">
+                        <div class="project-modal-form-grid">
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectCode">Código de Proyecto *</label>
+                                <input type="text" id="projectCode" class="project-input" required placeholder="PRJ-001">
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectStatus">Estado *</label>
+                                <select id="projectStatus" class="project-select" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Activo">Activo</option>
+                                    <option value="En Pausa">En Pausa</option>
+                                    <option value="Completado">Completado</option>
+                                    <option value="Cancelado">Cancelado</option>
+                                </select>
+                            </div>
+                            <div class="project-form-group project-form-group-full">
+                                <label class="project-label" for="projectName">Nombre del Proyecto *</label>
+                                <input type="text" id="projectName" class="project-input" required placeholder="Nombre del proyecto">
+                            </div>
+                            <div class="project-form-group project-form-group-full">
+                                <label class="project-label" for="projectLeader">Líder del Proyecto *</label>
+                                <input type="text" id="projectLeader" class="project-input" required placeholder="Nombre del líder">
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectStartDate">Fecha de Inicio *</label>
+                                <input type="date" id="projectStartDate" class="project-input" required>
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectEndDate">Fecha Fin *</label>
+                                <input type="date" id="projectEndDate" class="project-input" required>
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectPlannedProgress">% Planificado *</label>
+                                <input type="number" id="projectPlannedProgress" class="project-input" required min="0" max="100" step="0.1" placeholder="0.0">
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectActualProgress">% de Avance *</label>
+                                <input type="number" id="projectActualProgress" class="project-input" required min="0" max="100" step="0.1" placeholder="0.0">
+                            </div>
+                            <div class="project-form-group">
+                                <label class="project-label" for="projectManagementSystem">Sistema de Gestión *</label>
+                                <select id="projectManagementSystem" class="project-select" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option value="Jira">Jira</option>
+                                    <option value="Project">Microsoft Project</option>
+                                    <option value="Excel">Excel</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+                            <div class="project-form-group" id="managementPathGroup" style="display: none;">
+                                <label class="project-label" for="projectManagementPath">Ruta/URL del Sistema</label>
+                                <input type="text" id="projectManagementPath" class="project-input" placeholder="Ej: https://company.atlassian.net/browse/PRJ-001">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Panel: Documentos -->
+                <div class="tab-panel" id="panelDocuments">
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-size: 14px; color: #64748b; margin-bottom: 15px;">
+                            Adjunte los documentos vitales del proyecto que serán procesados por la IA para análisis predictivo.
+                        </p>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 18px;">
+                        <!-- L1 Document -->
+                        <div class="project-form-group">
+                            <label class="project-label" for="docL1">
+                                📄 L1 (Comité)
+                            </label>
+                            <input type="file" id="docL1" class="project-input" 
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm">
+                            <small id="docL1Status" style="font-size: 12px; color: #64748b; margin-top: 4px;"></small>
+                        </div>
+
+                        <!-- RFP Document -->
+                        <div class="project-form-group">
+                            <label class="project-label" for="docRFP">
+                                📋 RFP (Request for Proposal)
+                            </label>
+                            <input type="file" id="docRFP" class="project-input" 
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm">
+                            <small id="docRFPStatus" style="font-size: 12px; color: #64748b; margin-top: 4px;"></small>
+                        </div>
+
+                        <!-- Propuesta Técnica Document -->
+                        <div class="project-form-group">
+                            <label class="project-label" for="docPropuesta">
+                                📑 Propuesta Técnica
+                            </label>
+                            <input type="file" id="docPropuesta" class="project-input" 
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.xlsm">
+                            <small id="docPropuestaStatus" style="font-size: 12px; color: #64748b; margin-top: 4px;"></small>
+                        </div>
+
+                        <!-- GECO Excel Document -->
+                        <div class="project-form-group">
+                            <label class="project-label" for="docGECO">
+                                📊 GECO (Project Economic Management )
+                            </label>
+                            <input type="file" id="docGECO" class="project-input" 
+                                   accept=".xls,.xlsx,.xlsm">
+                            <small id="docGECOStatus" style="font-size: 12px; color: #64748b; margin-top: 4px;"></small>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; padding: 12px; background: #f0f9ff; border-left: 4px solid #0ea5e9; border-radius: 4px;">
+                        <p style="font-size: 13px; color: #0c4a6e; margin: 0;">
+                            ℹ️ <strong>Nota:</strong> Los documentos son opcionales y pueden adjuntarse posteriormente. 
+                            Tamaño máximo: 10MB. Formatos: PDF, DOC, DOCX, XLS, XLSX, XLSM.
+                        </p>
+                    </div>
+
+                    <!-- Lista de documentos adjuntos (cuando se edita un proyecto) -->
+                    <div id="attachedDocumentsList" style="margin-top: 25px; display: none;">
+                        <h4 style="font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 12px;">
+                            Documentos Adjuntos
+                        </h4>
+                        <div id="attachedDocumentsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                            <!-- Se renderizarán dinámicamente los documentos existentes -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="project-modal-footer">
+                <button class="project-btn project-btn-secondary" id="btnCancelModal">
+                    Cancelar
+                </button>
+                <button class="project-btn project-btn-success" id="btnSaveProject">
+                    <span class="project-spinner" id="saveSpinner" style="display: none;"></span>
+                    <span id="saveButtonText">Guardar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Mock API Data (comment out when using real API) -->
+    <!-- <script src="../../../ms-ia-projects/feature/ms-api-projects/projects-mock.js"></script> -->
+    <!-- Application Logic -->
+    <script src="page-projects.js"></script>
+</body>
+</html>
