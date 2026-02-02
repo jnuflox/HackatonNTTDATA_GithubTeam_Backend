@@ -1,5 +1,5 @@
 const supabase = require('../config/supabase');
-const azureOpenAIService = require('./azureOpenAI.service');
+const axetLLMService = require('./axetLLM.service');
 
 class ProjectService {
   // Transform database fields (snake_case) to frontend fields (camelCase)
@@ -205,7 +205,7 @@ class ProjectService {
     }
 
     try {
-      const aiAnalysis = await azureOpenAIService.analyzeProject(project);
+      const aiAnalysis = await axetLLMService.analyzeProject(project);
       
       const { error: updateError } = await supabase
         .from('projects')
@@ -260,7 +260,7 @@ class ProjectService {
       return project.ai_insights;
     }
 
-    const aiAnalysis = await azureOpenAIService.analyzeProject(project);
+    const aiAnalysis = await axetLLMService.analyzeProject(project);
     
     await supabase
       .from('projects')

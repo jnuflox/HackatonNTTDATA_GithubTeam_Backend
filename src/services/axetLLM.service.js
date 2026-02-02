@@ -1,27 +1,70 @@
-const { OpenAIClient, AzureKeyCredential } = require('@azure/openai');
+const axios = require('axios');
 
 /**
- * Azure OpenAI Service
+ * NTT Data Axet LLM Enabler Service
  * Implements advanced prompting techniques for project analysis
  * - Chain-of-Thought reasoning
  * - Few-shot learning
  * - Role-based prompting
  * - Structured output
  */
-class AzureOpenAIService {
+class AxetLLMService {
   constructor() {
-    this.mockMode = process.env.AZURE_OPENAI_MOCK_MODE === 'true';
+    this.mockMode = process.env.AXET_MOCK_MODE === 'true';
     
     if (!this.mockMode) {
-      this.endpoint = process.env.AZURE_OPENAI_ENDPOINT;
-      this.apiKey = process.env.AZURE_OPENAI_API_KEY;
-      this.deploymentName = process.env.AZURE_OPENAI_DEPLOYMENT_NAME || 'gpt-4';
-      this.apiVersion = process.env.AZURE_OPENAI_API_VERSION;
+      // Axet configuration
+      this.baseUrl = process.env.AXET_BASE_URL || 'https://axet-pre.nttdata.com';
+      this.projectId = process.env.AXET_PROJECT_ID;
+      this.userId = process.env.AXET_USER_ID;
+      this.assetId = process.env.AXET_ASSET_ID;
+      this.model = process.env.AXET_MODEL || 'gpt-5.1';
       
-      this.client = new OpenAIClient(
-        this.endpoint,
-        new AzureKeyCredential(this.apiKey)
+      // Token management
+      this.tokenUrl = process.env.AXET_TOKEN_URL || 'https://talkg.activos-coe.deptapps.everis.cloud/g';
+      this.tokenAuth = process.env.AXET_TOKEN_AUTH; // Bearer token for getting token
+      this.axetFlowId = process.env.AXET_FLOW_ID;
+      this.environment = process.env.AXET_ENVIRONMENT || 'DEV';
+      this.userOktaId = process.env.AXET_USER_OKTA_ID;
+      
+      this.accessToken = null;
+      this.tokenExpiry = null;
+    }
+  }
+
+  /**
+   * Get or refresh access token
+   */
+  async _getAccessToken() {
+    // Return cached token if still valid
+    if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
+      return this.accessToken;
+    }
+
+    try {
+      const response = await axios.post(
+        this.tokenUrl,
+        {
+          axetFlowId: this.axetFlowId,
+          enviroment: this.environment,
+          userOktaId: this.userOktaId
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.tokenAuth}`,
+            'Content-Type': 'application/json'
+          }
+        }
       );
+
+      this.accessToken = response.data.token || response.data.access_token;
+      // Set expiry to 50 minutes (tokens usually last 1 hour)
+      this.tokenExpiry = Date.now() + (50 * 60 * 1000);
+      
+      return this.accessToken;
+    } catch (error) {
+      console.error('Error getting Axet access token:', error.message);
+      throw new Error('Failed to authenticate with Axet service');
     }
   }
 
@@ -38,32 +81,57 @@ class AzureOpenAIService {
     const prompt = this._buildProjectAnalysisPrompt(projectData);
     
     try {
-      const response = await this.client.getChatCompletions(
-        this.deploymentName,
-        [
-          {
-            role: 'system',
-            content: this._getSystemPrompt()
-          },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
+      // Get access token
+      const token = await this._getAccessToken();
+      
+      // Build Axet LLM Enabler API URL
+      const url = `${this.baseUrl}/api/llm-enabler/v2/openai/ntt/${this.projectId}/v1/responses`;
+      
+      // Call Axet API with proper structure
+      const response = await axios.post(
+        url,
         {
-          temperature: 0.3, // Lower for more deterministic analysis
-          maxTokens: 2000,
-          topP: 0.95,
-          frequencyPenalty: 0,
-          presencePenalty: 0
+          model: this.model,
+          input: [
+            {
+              role: 'system',
+              content: this._getSystemPrompt()
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            'axet-project-id': this.projectId,
+            'axet-user-id': this.userId,
+            'axet-asset-id': this.assetId
+          }
         }
       );
 
-      const content = response.choices[0].message.content;
+      // Extract content from Axet response
+      // Response structure may vary, adjust based on actual API response
+      const content = response.data.choices?.[0]?.message?.content || 
+                     response.data.content || 
+                     response.data.output;
+      
+      if (!content) {
+        throw new Error('No content in Axet API response');
+      }
+
       return this._parseAnalysisResponse(content);
       
     } catch (error) {
-      console.error('Error calling Azure OpenAI:', error);
+      console.error('Error calling Axet LLM Enabler:', error.message);
+      if (error.response) {
+        console.error('Response status:', error.response.status);
+        console.error('Response data:', error.response.data);
+      }
       throw new Error('Failed to analyze project with AI');
     }
   }
@@ -243,7 +311,7 @@ Now analyze the project data above and provide comprehensive structured JSON out
   }
 
   /**
-   * Mock AI analysis for development (when AZURE_OPENAI_MOCK_MODE=true)
+   * Mock AI analysis for development (when AXET_MOCK_MODE=true)
    */
   _mockAnalyzeProject(projectData) {
     const { project, tasks = [] } = projectData;
@@ -386,4 +454,4 @@ Now analyze the project data above and provide comprehensive structured JSON out
   }
 }
 
-module.exports = new AzureOpenAIService();
+module.exports = new AxetLLMService();

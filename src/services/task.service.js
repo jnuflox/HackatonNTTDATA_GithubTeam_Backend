@@ -1,5 +1,5 @@
 const supabase = require('../config/supabase');
-const azureOpenAIService = require('./azureOpenAI.service');
+const axetLLMService = require('./axetLLM.service');
 
 class TaskService {
   async getTasksByProject(projectId) {
@@ -170,7 +170,7 @@ class TaskService {
       return task.ai_risk_analysis;
     }
 
-    const riskAnalysis = await azureOpenAIService.analyzeTask(task);
+    const riskAnalysis = await axetLLMService.analyzeTask(task);
 
     await supabase
       .from('tasks')
