@@ -22,12 +22,18 @@ SUPABASE_URL=https://tu-proyecto.supabase.co
 SUPABASE_KEY=tu-anon-key-aquí
 ```
 
-#### Variables de Azure OpenAI (Opcional - Mockup Activo)
+#### Variables de Axet LLM Enabler (Opcional - Mockup Activo por defecto)
 ```
-AZURE_OPENAI_MOCK_MODE=true
-AZURE_OPENAI_ENDPOINT=tu-endpoint (solo si desactivas mock)
-AZURE_OPENAI_API_KEY=tu-api-key (solo si desactivas mock)
-AZURE_OPENAI_DEPLOYMENT_NAME=gpt-4 (solo si desactivas mock)
+AXET_MOCK_MODE=true
+AXET_BASE_URL=https://axet-pre.nttdata.com (solo si desactivas mock)
+AXET_PROJECT_ID=tu-project-id (solo si desactivas mock)
+AXET_USER_ID=tu-user-id (solo si desactivas mock)
+AXET_ASSET_ID=tu-asset-id (solo si desactivas mock)
+AXET_MODEL=gpt-5.1 (solo si desactivas mock)
+AXET_TOKEN_AUTH=tu-bearer-token (solo si desactivas mock)
+AXET_FLOW_ID=tu-flow-id (solo si desactivas mock)
+AXET_ENVIRONMENT=DEV (solo si desactivas mock)
+AXET_USER_OKTA_ID=tu-okta-id (solo si desactivas mock)
 ```
 
 #### Variables de Entorno

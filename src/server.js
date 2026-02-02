@@ -195,11 +195,12 @@ const startServer = async () => {
       app.listen(PORT, () => {
         console.log('='.repeat(60));
         console.log(`🚀 Server running on http://localhost:${PORT}`);
-        console.log(`📚 API Documentation: http://localhost:${PORT}/api`);
+        console.log(`📚 Swagger UI: http://localhost:${PORT}/api-docs`);
+        console.log(`📄 API Endpoints: http://localhost:${PORT}/api`);
         console.log(`🏥 Health Check: http://localhost:${PORT}/health`);
         console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
         console.log(`💾 Database: Supabase REST API`);
-        console.log(`🤖 Azure OpenAI Mock Mode: ${process.env.AZURE_OPENAI_MOCK_MODE === 'true' ? 'ENABLED' : 'DISABLED'}`);
+        console.log(`🤖 Axet LLM Mock Mode: ${process.env.AXET_MOCK_MODE === 'true' ? 'ENABLED' : 'DISABLED'}`);
         console.log('='.repeat(60));
       });
     } else {
