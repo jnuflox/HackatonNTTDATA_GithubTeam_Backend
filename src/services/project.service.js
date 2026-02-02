@@ -1,6 +1,22 @@
 const supabase = require('../config/supabase');
 const axetLLMService = require('./axetLLM.service');
 
+/**
+ * Calculate risk level from AI analysis health score
+ * @param {Object} analysis - AI analysis object with healthScore
+ * @returns {string} - Risk level: 'green', 'yellow', or 'red'
+ */
+function calculateRiskLevel(analysis) {
+  if (!analysis || typeof analysis.healthScore !== 'number') {
+    return 'yellow'; // Default to yellow if no score available
+  }
+  
+  const score = analysis.healthScore;
+  if (score >= 80) return 'green';
+  if (score >= 60) return 'yellow';
+  return 'red';
+}
+
 class ProjectService {
   // Transform database fields (snake_case) to frontend fields (camelCase)
   transformProject(project) {
@@ -191,7 +207,9 @@ class ProjectService {
       start_date: projectData.start_date || null,
       end_date: projectData.end_date || null,
       budget: projectData.budget || null,
-      ai_insights: null
+      ai_analysis: null,
+      ai_last_analysis_date: null,
+      ai_risk_level: null
     };
 
     const { data: project, error } = await supabase
@@ -206,14 +224,21 @@ class ProjectService {
 
     try {
       const aiAnalysis = await axetLLMService.analyzeProject(project);
+      const riskLevel = calculateRiskLevel(aiAnalysis);
       
       const { error: updateError } = await supabase
         .from('projects')
-        .update({ ai_insights: aiAnalysis })
+        .update({ 
+          ai_analysis: aiAnalysis,
+          ai_last_analysis_date: new Date().toISOString(),
+          ai_risk_level: riskLevel
+        })
         .eq('id', project.id);
 
       if (!updateError) {
-        project.ai_insights = aiAnalysis;
+        project.ai_analysis = aiAnalysis;
+        project.ai_last_analysis_date = new Date().toISOString();
+        project.ai_risk_level = riskLevel;
       }
     } catch (aiError) {
       console.error('AI Analysis error:', aiError);
@@ -256,18 +281,64 @@ class ProjectService {
   async getProjectAIAnalysis(projectId) {
     const project = await this.getProjectById(projectId);
     
-    if (project.ai_insights) {
-      return project.ai_insights;
+    if (project.ai_analysis) {
+      return project.ai_analysis;
     }
 
     const aiAnalysis = await axetLLMService.analyzeProject(project);
+    const riskLevel = calculateRiskLevel(aiAnalysis);
     
     await supabase
       .from('projects')
-      .update({ ai_insights: aiAnalysis })
+      .update({ 
+        ai_analysis: aiAnalysis,
+        ai_last_analysis_date: new Date().toISOString(),
+        ai_risk_level: riskLevel
+      })
       .eq('id', projectId);
 
     return aiAnalysis;
+  }
+
+  /**
+   * Get project with AI analysis (called by controller)
+   * @param {string} projectId - Project ID
+   * @param {boolean} forceRefresh - Force new AI analysis
+   * @returns {Promise<Object>} - Project with AI analysis
+   */
+  async getProjectWithAIAnalysis(projectId, forceRefresh = false) {
+    const { data: project, error } = await supabase
+      .from('projects')
+      .select('*')
+      .eq('id', projectId)
+      .single();
+
+    if (error || !project) {
+      throw new Error('Project not found');
+    }
+
+    // If force refresh or no analysis exists, generate new analysis
+    if (forceRefresh || !project.ai_analysis) {
+      const aiAnalysis = await axetLLMService.analyzeProject(project);
+      const riskLevel = calculateRiskLevel(aiAnalysis);
+      
+      const { error: updateError } = await supabase
+        .from('projects')
+        .update({ 
+          ai_analysis: aiAnalysis,
+          ai_last_analysis_date: new Date().toISOString(),
+          ai_risk_level: riskLevel
+        })
+        .eq('id', projectId);
+
+      if (!updateError) {
+        project.ai_analysis = aiAnalysis;
+        project.ai_last_analysis_date = new Date().toISOString();
+        project.ai_risk_level = riskLevel;
+      }
+    }
+
+    return project;
   }
 
   async getProjectHistory(projectId) {

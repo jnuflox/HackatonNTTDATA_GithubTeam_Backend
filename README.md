@@ -1,11 +1,14 @@
-# sAPI IA Projects - Backend Hackathon NTT DATA
+# 🚀 sAPI IA Projects - Backend Hackathon NTT DATA
 
 ![Node.js](https://img.shields.io/badge/Node.js-20.x-green)
 ![Express](https://img.shields.io/badge/Express-4.18-blue)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Supabase-orange)
 ![AI](https://img.shields.io/badge/AI-Axet%20LLM-purple)
+![Status](https://img.shields.io/badge/Status-Production-success)
 
-API REST Node.js para gestión inteligente de proyectos con análisis mediante IA usando **Axet Conector LLM** de NTT DATA y base de datos PostgreSQL en Supabase.
+API REST Node.js con análisis inteligente de proyectos mediante IA usando **Axet Conector LLM** de NTT DATA y base de datos PostgreSQL en Supabase.
+
+> 🏆 **Hackathon NTT DATA 2025** - Sistema de gestión de proyectos con análisis predictivo mediante IA, implementando técnicas avanzadas de prompting y arquitectura serverless.
 
 ## 🚀 Características Principales
 

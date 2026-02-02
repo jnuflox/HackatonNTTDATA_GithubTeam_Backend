@@ -100,9 +100,19 @@ const options = {
               description: 'Project budget',
               example: 50000.00
             },
-            ai_insights: {
+            ai_analysis: {
               type: 'object',
-              description: 'AI-generated insights from Azure OpenAI'
+              description: 'AI-generated analysis from Axet LLM (includes status, healthScore, risks, recommendations, insights, predictedCompletionDate, confidenceLevel, keyMetrics)'
+            },
+            ai_last_analysis_date: {
+              type: 'string',
+              format: 'date-time',
+              description: 'Timestamp of last AI analysis'
+            },
+            ai_risk_level: {
+              type: 'string',
+              enum: ['green', 'yellow', 'red'],
+              description: 'Risk level calculated from health score'
             },
             created_at: {
               type: 'string',
